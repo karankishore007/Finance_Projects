@@ -345,6 +345,35 @@ function renderFinancialsChart(data) {
 }
 
 function setupEventListeners() {
+    // View Switcher
+    document.getElementById('view-market').onclick = () => {
+        document.getElementById('view-market').classList.add('active');
+        document.getElementById('view-portfolio').classList.remove('active');
+        document.getElementById('market-nav').classList.remove('hidden');
+        document.getElementById('portfolio-nav').classList.add('hidden');
+    };
+
+    document.getElementById('view-portfolio').onclick = () => {
+        document.getElementById('view-portfolio').classList.add('active');
+        document.getElementById('view-market').classList.remove('active');
+        document.getElementById('portfolio-nav').classList.remove('hidden');
+        document.getElementById('market-nav').classList.add('hidden');
+    };
+
+    // Unlock Portfolio Logic
+    document.getElementById('btn-unlock-portfolio').onclick = () => {
+        loadPortfolioData();
+    };
+
+    // Trade Buttons
+    document.getElementById('btn-buy').onclick = () => openTradeModal('buy');
+    document.getElementById('btn-sell').onclick = () => openTradeModal('sell');
+    document.getElementById('modal-close').onclick = () => {
+        document.getElementById('trade-modal').classList.add('hidden');
+        document.getElementById('order-status-msg').classList.add('hidden');
+    };
+    document.getElementById('confirm-order-btn').onclick = handleConfirmOrder;
+
     // Period Toggles
     document.querySelectorAll('.filter-btn').forEach(btn => {
         btn.onclick = () => {
@@ -389,10 +418,135 @@ function setupEventListeners() {
 
     // Close search results when clicking outside
     document.addEventListener('click', (e) => {
-        if (!searchInput.contains(e.target) && !searchResults.contains(e.target)) {
+        if (!searchInput.contains(e.target) && !searchResults.contains(e.target) && !e.target.closest('.modal')) {
             searchResults.classList.add('hidden');
         }
     });
+}
+
+function openTradeModal(side) {
+    if (!stockData) return;
+    
+    const modal = document.getElementById('trade-modal');
+    const statusMsg = document.getElementById('order-status-msg');
+    
+    modal.classList.remove('hidden');
+    statusMsg.classList.add('hidden'); // Reset status msg
+    statusMsg.textContent = '';
+    
+    document.getElementById('modal-title').textContent = `Confirm ${side.toUpperCase()} Order`;
+    document.getElementById('order-ticker').textContent = currentTicker;
+    document.getElementById('order-side').textContent = side.toUpperCase();
+    document.getElementById('order-side').className = `value ${side}`;
+    
+    // Check AI Alignment
+    const aiBias = stockData.advisor.status.toLowerCase();
+    const noteEl = document.getElementById('modal-advisor-note');
+    
+    if ((side === 'buy' && aiBias === 'bullish') || (side === 'sell' && aiBias === 'bearish')) {
+        noteEl.innerHTML = '<span class="icon">✨</span><span class="text">AI Advisor matches this move.</span>';
+        noteEl.style.background = 'rgba(16, 185, 129, 0.1)';
+    } else {
+        noteEl.innerHTML = '<span class="icon">⚠️</span><span class="text">AI Advisor has a conflicting bias.</span>';
+        noteEl.style.background = 'rgba(239, 68, 68, 0.1)';
+    }
+}
+
+async function handleConfirmOrder() {
+    const side = document.getElementById('order-side').textContent.toLowerCase();
+    const qty = document.getElementById('order-qty').value;
+    const btn = document.getElementById('confirm-order-btn');
+    const statusMsg = document.getElementById('order-status-msg');
+    
+    btn.disabled = true;
+    btn.textContent = 'Processing...';
+    statusMsg.classList.add('hidden');
+    
+    try {
+        const response = await fetch('/api/trade/place', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                ticker: currentTicker,
+                quantity: parseInt(qty),
+                side: side
+            })
+        });
+        
+        const result = await response.json();
+        statusMsg.classList.remove('hidden');
+        
+        if (result.status === 'success' || result.orderId) {
+            statusMsg.className = 'order-status-msg success';
+            statusMsg.textContent = `Success! Order ID: ${result.orderId || 'MOCK-123'}`;
+            // Refresh portfolio after a short delay
+            setTimeout(() => { if (!document.getElementById('portfolio-nav').classList.contains('hidden')) loadPortfolioData(); }, 2000);
+        } else {
+            statusMsg.className = 'order-status-msg error';
+            statusMsg.textContent = `Order Rejected: ${result.remarks || result.message || result.error || 'Check Market Hours'}`;
+        }
+    } catch (err) {
+        statusMsg.classList.remove('hidden');
+        statusMsg.className = 'order-status-msg error';
+        statusMsg.textContent = 'Network error. Please try again.';
+    } finally {
+        btn.disabled = false;
+        btn.textContent = 'Confirm Order';
+    }
+}
+
+async function loadPortfolioData() {
+    try {
+        const response = await fetch('/api/portfolio/summary');
+        const data = await response.json();
+        
+        const statusDot = document.getElementById('dhan-status');
+        if (data.status === 'connected') {
+            statusDot.className = 'status-indicator-mini green';
+            renderHoldings(data.holdings);
+            updatePortfolioValue(data.holdings);
+        } else {
+            statusDot.className = 'status-indicator-mini red';
+        }
+    } catch (err) {
+        console.error('Portfolio load error:', err);
+    }
+}
+
+function renderHoldings(holdings) {
+    const list = document.getElementById('holdings-list');
+    list.innerHTML = '';
+    
+    if (!holdings || holdings.length === 0) {
+        list.innerHTML = '<div class="status-msg">No holdings found.</div>';
+        return;
+    }
+
+    holdings.forEach(h => {
+        const item = document.createElement('div');
+        item.className = 'stock-item';
+        const pnl = h.pnl || 0;
+        const qty = h.totalQty || 0;
+        
+        item.innerHTML = `
+            <div class="ticker">${h.tradingSymbol || '---'}</div>
+            <div class="price-min">
+                <div class="price-val">${qty} Units</div>
+                <div class="change-val ${pnl >= 0 ? 'change-positive' : 'change-negative'}">
+                    ₹${pnl.toFixed(2)}
+                </div>
+            </div>
+        `;
+        list.appendChild(item);
+    });
+}
+
+function updatePortfolioValue(holdings) {
+    if (!holdings) return;
+    const totalVal = holdings.reduce((sum, h) => sum + (parseFloat(h.currentValue) || 0), 0);
+    const pill = document.getElementById('header-portfolio-value');
+    pill.classList.remove('hidden');
+    document.getElementById('nav-balance').textContent = `₹${totalVal.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 }
 
 function renderSearchResults(items) {

@@ -16,19 +16,39 @@
 <body class="dark-mode">
     <div class="app-container">
         <!-- Sidebar -->
-        <aside class="sidebar">
+        <aside class="sidebar glass">
             <div class="logo-container">
                 <div class="logo-icon">📊</div>
                 <h1>FinAnalytics</h1>
             </div>
-            <nav class="sidebar-nav">
+
+            <div class="view-switcher">
+                <button id="view-market" class="view-btn active">Market</button>
+                <button id="view-portfolio" class="view-btn">Portfolio</button>
+            </div>
+            
+            <nav id="market-nav" class="sidebar-nav">
                 <div class="nav-section-title">IT Sector - NSE</div>
                 <div id="stock-list" class="stock-list">
                     <!-- Loaded dynamically -->
                     <div class="skeleton-list"></div>
                 </div>
             </nav>
+
+            <nav id="portfolio-nav" class="sidebar-nav hidden">
+                <div class="nav-section-title">Dhan HQ <span id="dhan-status" class="status-indicator-mini red"></span></div>
+                <div id="holdings-list" class="stock-list">
+                    <div class="privacy-container">
+                        <p class="privacy-note">Portfolio data is hidden for privacy.</p>
+                        <button id="btn-unlock-portfolio" class="view-btn active">Sync & View Portfolio</button>
+                    </div>
+                </div>
+            </nav>
+
             <div class="sidebar-footer">
+                <div class="dhan-branding">
+                    <span class="dhan-logo">⚡</span> Powered by <strong>Dhan HQ</strong>
+                </div>
                 <div class="status-badge">
                     <span class="pulse"></span> Live Data Ingesting
                 </div>
@@ -47,6 +67,11 @@
                     <div class="ai-badge">AI</div>
                 </div>
                 <div class="user-profile">
+                    <div id="header-portfolio-value" class="portfolio-pill hidden">
+                        <span class="dhan-logo">⚡</span>
+                        <span class="label">Live Balance:</span>
+                        <span id="nav-balance" class="value">₹0.00</span>
+                    </div>
                     <div class="avatar">AI</div>
                 </div>
             </header>
@@ -87,6 +112,10 @@
                     </div>
 
                     <div class="header-controls">
+                        <div class="trade-actions">
+                            <button id="btn-buy" class="trade-btn buy">Quick Buy</button>
+                            <button id="btn-sell" class="trade-btn sell">Quick Sell</button>
+                        </div>
                         <div class="overlay-toggles">
                             <label class="toggle-container">
                                 <input type="checkbox" class="toggle-sm" data-indicator="sma20">
@@ -164,6 +193,41 @@
                 </div>
             </section>
         </main>
+    </div>
+
+    <!-- Trade Modal -->
+    <div id="trade-modal" class="modal hidden">
+        <div class="modal-content glass">
+            <div class="modal-header">
+                <h3 id="modal-title">Confirm Order</h3>
+                <button id="modal-close" class="close-btn">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="order-info">
+                    <div class="info-item">
+                        <span class="label">Stock</span>
+                        <span id="order-ticker" class="value">---</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="label">Side</span>
+                        <span id="order-side" class="value">---</span>
+                    </div>
+                </div>
+                <div class="input-group">
+                    <label for="order-qty">Quantity</label>
+                    <input type="number" id="order-qty" value="1" min="1">
+                </div>
+                <div id="modal-advisor-note" class="advisor-note">
+                    <span class="icon">✨</span>
+                    <span class="text">AI Advisor matches this move.</span>
+                </div>
+                <!-- Status Message Area -->
+                <div id="order-status-msg" class="order-status-msg hidden"></div>
+            </div>
+            <div class="modal-footer">
+                <button id="confirm-order-btn" class="confirm-btn">Confirm Order</button>
+            </div>
+        </div>
     </div>
 
     <!-- Background Decoration -->
