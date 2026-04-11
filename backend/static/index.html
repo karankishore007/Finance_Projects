@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Intelligent Financial Analytics | Dashboard</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <!-- ApexCharts CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body class="dark-mode">
+    <div class="app-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="logo-container">
+                <div class="logo-icon">📊</div>
+                <h1>FinAnalytics</h1>
+            </div>
+            <nav class="sidebar-nav">
+                <div class="nav-section-title">IT Sector - NSE</div>
+                <div id="stock-list" class="stock-list">
+                    <!-- Loaded dynamically -->
+                    <div class="skeleton-list"></div>
+                </div>
+            </nav>
+            <div class="sidebar-footer">
+                <div class="status-badge">
+                    <span class="pulse"></span> Live Data Ingesting
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <header class="top-bar">
+                <div class="search-container">
+                    <div class="search-inner">
+                        <i data-lucide="search" class="search-icon"></i>
+                        <input type="text" id="search-input" placeholder="Search ticker or company (e.g. RELIANCE)..." autocomplete="off">
+                        <div id="search-results" class="search-results-dropdown glass hidden"></div>
+                    </div>
+                    <div class="ai-badge">AI</div>
+                </div>
+                <div class="user-profile">
+                    <div class="avatar">AI</div>
+                </div>
+            </header>
+
+            <section class="dashboard-grid">
+                <!-- Header Stats -->
+                <div class="stock-header-card glass">
+                    <div class="stock-info">
+                        <div class="title-row">
+                            <h2 id="main-stock-name">---</h2>
+                            <span id="main-stock-ticker" class="ticker-badge">---</span>
+                        </div>
+                        <div class="price-row">
+                            <div id="main-stock-price" class="current-price">₹0.00</div>
+                            <div id="main-stock-change" class="price-change">
+                                <span class="value">+0.00</span>
+                                <span class="percent">(0.00%)</span>
+                            </div>
+                        </div>
+                        <div class="sentiment-bar-container">
+                            <div class="sentiment-label">Market Mood</div>
+                            <div class="sentiment-track">
+                                <div id="sentiment-indicator" class="sentiment-fill"></div>
+                            </div>
+                            <div id="sentiment-text" class="sentiment-status">Neutral</div>
+                        </div>
+                    </div>
+                    
+                    <div id="advisor-card" class="advisor-card glass">
+                        <div class="advisor-header">
+                            <div class="ai-icon">✨</div>
+                            <div class="advisor-title">AI STRATEGIST</div>
+                            <div id="advisor-status" class="advisor-status">NEUTRAL</div>
+                        </div>
+                        <div id="advisor-insight" class="advisor-insight">
+                            Analyzing market signals...
+                        </div>
+                    </div>
+
+                    <div class="header-controls">
+                        <div class="overlay-toggles">
+                            <label class="toggle-container">
+                                <input type="checkbox" class="toggle-sm" data-indicator="sma20">
+                                <span class="toggle-label">SMA 20</span>
+                            </label>
+                            <label class="toggle-container">
+                                <input type="checkbox" class="toggle-sm" data-indicator="sma50">
+                                <span class="toggle-label">SMA 50</span>
+                            </label>
+                            <label class="toggle-container">
+                                <input type="checkbox" class="toggle-sm" data-indicator="sma200">
+                                <span class="toggle-label">SMA 200</span>
+                            </label>
+                        </div>
+                        <div class="time-filters">
+                            <button class="filter-btn" data-period="1mo">1M</button>
+                            <button class="filter-btn" data-period="6mo">6M</button>
+                            <button class="filter-btn active" data-period="1y">1Y</button>
+                            <button class="filter-btn" data-period="5y">5Y</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Chart Grid -->
+                <div class="analytics-grid">
+                    <!-- Main Chart & RSI -->
+                    <div class="price-analytics-stack">
+                        <div class="chart-container glass">
+                            <div class="chart-label">Historical Price & Volume</div>
+                            <div id="main-chart"></div>
+                        </div>
+                        <div class="forecast-container glass">
+                            <div class="chart-label">AI 7-Day Forecast Projection</div>
+                            <div id="forecast-chart"></div>
+                        </div>
+                        <div class="rsi-container glass">
+                            <div class="chart-label">RSI (14)</div>
+                            <div id="rsi-chart"></div>
+                        </div>
+                    </div>
+
+                    <!-- Side Panels: Financials & News -->
+                    <div class="data-panels-stack">
+                        <div class="news-container glass">
+                            <div class="chart-label">News & Sentiment</div>
+                            <div id="news-feed" class="news-feed">
+                                <!-- Loaded dynamically -->
+                            </div>
+                        </div>
+
+                        <div class="financials-container glass">
+                            <div class="chart-label">Quarterly Financials (Cr)</div>
+                            <div id="fin-chart"></div>
+                        </div>
+                        
+                        <div class="kpi-grid-mini">
+                            <div class="kpi-card glass">
+                                <div class="kpi-label">Market Cap</div>
+                                <div id="kpi-mcap" class="kpi-value">---</div>
+                            </div>
+                            <div class="kpi-card glass">
+                                <div class="kpi-label">P/E Ratio</div>
+                                <div id="kpi-pe" class="kpi-value">---</div>
+                            </div>
+                            <div class="kpi-card glass">
+                                <div class="kpi-label">52W High</div>
+                                <div id="kpi-high" class="kpi-value">---</div>
+                            </div>
+                            <div class="kpi-card glass">
+                                <div class="kpi-label">52W Low</div>
+                                <div id="kpi-low" class="kpi-value">---</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Background Decoration -->
+    <div class="bg-glow"></div>
+    <div class="bg-glow-2"></div>
+
+    <script src="app.js"></script>
+    <script>
+        // Initialize Lucide icons
+        lucide.createIcons();
+    </script>
+</body>
+</html>
