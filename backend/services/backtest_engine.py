@@ -412,20 +412,22 @@ class BacktestEngine:
         daily_returns = np.diff(eq) / np.where(eq[:-1] > 0, eq[:-1], 1.0)
         daily_rf = self._risk_free / 252.0
 
-        # Sharpe
-        excess = daily_returns - daily_rf
-        sharpe = (
-            float(np.mean(excess) / np.std(excess) * np.sqrt(252))
-            if np.std(excess) > 0 else 0.0
-        )
+        # Guard: if no trades happened, returns are all ~0 — avoid garbage metrics
+        if len(trades) == 0 or np.std(daily_returns) < 1e-12:
+            sharpe = 0.0
+            sortino = 0.0
+        else:
+            # Sharpe
+            excess = daily_returns - daily_rf
+            sharpe = float(np.mean(excess) / np.std(excess) * np.sqrt(252))
 
-        # Sortino
-        downside = excess[excess < 0]
-        downside_std = float(np.std(downside)) if len(downside) > 0 else 1.0
-        sortino = (
-            float(np.mean(excess) / downside_std * np.sqrt(252))
-            if downside_std > 0 else 0.0
-        )
+            # Sortino
+            downside = excess[excess < 0]
+            downside_std = float(np.std(downside)) if len(downside) > 0 else 1.0
+            sortino = (
+                float(np.mean(excess) / downside_std * np.sqrt(252))
+                if downside_std > 1e-12 else 0.0
+            )
 
         # Trade stats
         winners = [t for t in trades if t.pnl > 0]

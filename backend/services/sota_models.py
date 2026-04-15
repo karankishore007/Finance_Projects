@@ -131,7 +131,7 @@ class TransformerForecastModel:
 
             # Negative pct_change => price going down => sell (positive score)
             # Positive pct_change => price going up => buy (negative score)
-            raw_score = float(-np.tanh(pct_change * 50))  # scaling factor
+            raw_score = float(-np.tanh(pct_change * 8))  # dampened scaling
 
             elapsed = (time.perf_counter() - start) * 1000
             signal = ModelSignal(

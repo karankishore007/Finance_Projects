@@ -16,17 +16,24 @@ app:
 # --- Data Pipeline ---
 data:
   # Tickers to track (Nifty IT sector focus for Sprint 2)
+  # Auto-selected by StockScreener (multi-factor: liquidity, volatility,
+  # trend clarity, signal density, sector diversification)
   watchlist:
-    - "TCS.NS"
-    - "INFY.NS"
-    - "HCLTECH.NS"
-    - "WIPRO.NS"
-    - "TECHM.NS"
-    - "LTIM.NS"
-    - "PERSISTENT.NS"
+    - "ONGC.NS"
     - "COFORGE.NS"
-    - "MPHASIS.NS"
-    - "LTTS.NS"
+    - "WIPRO.NS"
+    - "IDFCFIRSTB.NS"
+    - "PFC.NS"
+    - "VEDL.NS"
+    - "ASIANPAINT.NS"
+    - "M&M.NS"
+    - "TATAPOWER.NS"
+    - "ICICIBANK.NS"
+    - "RELIANCE.NS"
+    - "BHARTIARTL.NS"
+    - "HAL.NS"
+    - "IRCTC.NS"
+    - "SAIL.NS"
 
   # Historical data settings
   backfill_period_months: 24
@@ -90,7 +97,7 @@ models:
 
 # --- Meta-Learner ---
 meta_learner:
-  alignment_threshold: 0.75    # Min confidence for signal generation
+  alignment_threshold: 0.50    # Paper trading phase (lower for validation; raise to 0.75 for live)
   legacy_council_weight: 0.4
   sota_council_weight: 0.6
   min_legacy_agreement: 1      # At least N legacy models must agree
