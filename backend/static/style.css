@@ -847,3 +847,292 @@ body {
     color: var(--success-color);
     border: 1px solid rgba(16, 185, 129, 0.2);
 }
+
+/* ============================================================================
+   Agent Dashboard Styles (Sprint 2+)
+   ============================================================================ */
+
+/* View Switcher - 3 tabs */
+.view-switcher-3 {
+    display: flex;
+    gap: 6px;
+    margin-bottom: 24px;
+    padding: 0 8px;
+}
+.view-switcher-3 .view-btn {
+    flex: 1;
+    padding: 8px 6px;
+    font-size: 11px;
+}
+
+/* Agent Signal Card */
+.agent-signal-card {
+    padding: 20px 24px;
+    border: 1px solid rgba(99, 102, 241, 0.25);
+    background: linear-gradient(135deg, rgba(99, 102, 241, 0.08) 0%, rgba(16, 185, 129, 0.04) 100%);
+    position: relative;
+    overflow: hidden;
+}
+
+.signal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+}
+
+.signal-direction {
+    font-size: 28px;
+    font-weight: 800;
+    letter-spacing: -1px;
+}
+.signal-direction.buy { color: var(--success-color); }
+.signal-direction.sell { color: var(--danger-color); }
+.signal-direction.hold { color: var(--text-secondary); }
+
+.signal-confidence {
+    font-size: 14px;
+    font-weight: 700;
+    padding: 6px 14px;
+    border-radius: 20px;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid var(--border-color);
+}
+
+/* Confidence Bar */
+.confidence-bar-track {
+    width: 100%;
+    height: 6px;
+    background: rgba(255, 255, 255, 0.06);
+    border-radius: 3px;
+    margin-bottom: 16px;
+    overflow: hidden;
+}
+.confidence-bar-fill {
+    height: 100%;
+    border-radius: 3px;
+    transition: width 0.6s ease, background 0.3s ease;
+}
+
+/* SL/TP display */
+.signal-levels {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 16px;
+}
+.level-item {
+    text-align: center;
+    padding: 10px;
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: 10px;
+    border: 1px solid var(--border-color);
+}
+.level-label {
+    font-size: 10px;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    margin-bottom: 4px;
+}
+.level-value {
+    font-size: 16px;
+    font-weight: 700;
+}
+.level-value.entry { color: var(--accent-color); }
+.level-value.sl { color: var(--danger-color); }
+.level-value.tp { color: var(--success-color); }
+
+/* Model Votes */
+.model-votes {
+    margin-top: 12px;
+}
+.model-votes-title {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 10px;
+}
+.model-vote-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 6px;
+}
+.model-name {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--text-secondary);
+    width: 100px;
+    flex-shrink: 0;
+}
+.vote-bar-track {
+    flex: 1;
+    height: 4px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 2px;
+    position: relative;
+    overflow: hidden;
+}
+.vote-bar-fill {
+    height: 100%;
+    border-radius: 2px;
+    transition: width 0.4s ease;
+}
+.vote-bar-fill.buy { background: var(--success-color); }
+.vote-bar-fill.sell { background: var(--danger-color); }
+.vote-bar-fill.neutral { background: var(--text-secondary); }
+.vote-score {
+    font-size: 11px;
+    font-weight: 700;
+    width: 40px;
+    text-align: right;
+}
+
+/* Signal reasoning */
+.signal-reasoning {
+    font-size: 12px;
+    color: var(--text-secondary);
+    line-height: 1.5;
+    margin-top: 12px;
+    padding: 10px;
+    background: rgba(255, 255, 255, 0.02);
+    border-radius: 8px;
+    border-left: 3px solid var(--accent-color);
+}
+
+/* Paper Portfolio Panel */
+.paper-portfolio-card {
+    padding: 20px 24px;
+}
+.portfolio-stats {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 16px;
+}
+.pstat {
+    padding: 12px;
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: 10px;
+    border: 1px solid var(--border-color);
+}
+.pstat-label {
+    font-size: 10px;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    font-weight: 700;
+}
+.pstat-value {
+    font-size: 18px;
+    font-weight: 700;
+    margin-top: 4px;
+}
+
+/* Backtest Results */
+.backtest-metrics {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 10px;
+    margin-bottom: 16px;
+}
+.bt-metric {
+    text-align: center;
+    padding: 12px 8px;
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: 10px;
+    border: 1px solid var(--border-color);
+}
+.bt-metric-label {
+    font-size: 10px;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    font-weight: 700;
+    margin-bottom: 4px;
+}
+.bt-metric-value {
+    font-size: 16px;
+    font-weight: 700;
+}
+
+/* Agent loading spinner */
+.agent-loading {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 40px;
+    gap: 12px;
+    color: var(--text-secondary);
+    font-size: 13px;
+}
+.spinner {
+    width: 20px;
+    height: 20px;
+    border: 2px solid var(--border-color);
+    border-top-color: var(--accent-color);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+}
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+/* Agent action buttons row */
+.agent-actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 12px;
+}
+.agent-btn {
+    flex: 1;
+    padding: 10px;
+    border-radius: 10px;
+    font-weight: 700;
+    font-size: 12px;
+    cursor: pointer;
+    border: 1px solid var(--border-color);
+    background: rgba(255, 255, 255, 0.05);
+    color: var(--text-primary);
+    transition: all 0.2s ease;
+}
+.agent-btn:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: var(--accent-color);
+}
+.agent-btn.primary {
+    background: var(--accent-color);
+    border-color: var(--accent-color);
+    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+}
+.agent-btn.primary:hover { filter: brightness(1.1); }
+
+/* Time filters row */
+.filter-row {
+    display: flex;
+    gap: 8px;
+}
+.filter-btn {
+    padding: 6px 14px;
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+    background: transparent;
+    color: var(--text-secondary);
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+.filter-btn.active {
+    background: var(--accent-color);
+    border-color: var(--accent-color);
+    color: white;
+}
+
+/* Backtest chart container */
+.backtest-chart-container {
+    padding: 24px;
+    min-height: 360px;
+}

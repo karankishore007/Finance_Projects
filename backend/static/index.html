@@ -22,8 +22,9 @@
                 <h1>FinAnalytics</h1>
             </div>
 
-            <div class="view-switcher">
+            <div class="view-switcher view-switcher-3">
                 <button id="view-market" class="view-btn active">Market</button>
+                <button id="view-agent" class="view-btn">Agent</button>
                 <button id="view-portfolio" class="view-btn">Portfolio</button>
             </div>
             
@@ -32,6 +33,41 @@
                 <div id="stock-list" class="stock-list">
                     <!-- Loaded dynamically -->
                     <div class="skeleton-list"></div>
+                </div>
+            </nav>
+
+            <nav id="agent-nav" class="sidebar-nav hidden">
+                <div class="nav-section-title">AI Agent <span class="pulse"></span></div>
+                <div id="agent-signal-card" class="agent-signal-card glass">
+                    <div class="agent-loading"><div class="spinner"></div>Select a stock...</div>
+                </div>
+
+                <div class="agent-actions" style="margin-top:12px;">
+                    <button id="btn-get-signal" class="agent-btn primary">Get Signal</button>
+                    <button id="btn-run-backtest" class="agent-btn">Backtest</button>
+                </div>
+
+                <div id="paper-portfolio-card" class="paper-portfolio-card glass" style="margin-top:16px;">
+                    <div class="chart-label">Paper Portfolio</div>
+                    <div class="portfolio-stats">
+                        <div class="pstat">
+                            <div class="pstat-label">NAV</div>
+                            <div id="paper-nav" class="pstat-value">---</div>
+                        </div>
+                        <div class="pstat">
+                            <div class="pstat-label">Return</div>
+                            <div id="paper-return" class="pstat-value">---</div>
+                        </div>
+                        <div class="pstat">
+                            <div class="pstat-label">Cash</div>
+                            <div id="paper-cash" class="pstat-value">---</div>
+                        </div>
+                        <div class="pstat">
+                            <div class="pstat-label">Open</div>
+                            <div id="paper-open" class="pstat-value">---</div>
+                        </div>
+                    </div>
+                    <button id="btn-paper-trade" class="agent-btn" style="width:100%;">Place Paper Trade</button>
                 </div>
             </nav>
 
@@ -192,6 +228,14 @@
                     </div>
                 </div>
             </section>
+            <!-- Backtest Results Panel (hidden by default) -->
+            <section id="backtest-section" class="hidden" style="margin-top:24px;">
+                <div class="backtest-chart-container glass">
+                    <div class="chart-label">Backtest Results — <span id="bt-ticker">---</span></div>
+                    <div id="bt-metrics" class="backtest-metrics"></div>
+                    <div id="backtest-chart"></div>
+                </div>
+            </section>
         </main>
     </div>
 
@@ -235,6 +279,7 @@
     <div class="bg-glow-2"></div>
 
     <script src="app.js"></script>
+    <script src="agent-dashboard.js"></script>
     <script>
         // Initialize Lucide icons
         lucide.createIcons();

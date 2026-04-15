@@ -16,9 +16,9 @@ const TINT_COLORS = {
 
 // Initialize the dashboard
 async function init() {
+    setupEventListeners(); // set up UI interactions immediately, before any API calls
     await loadTopStocks();
     await loadStockDetails(currentTicker, currentPeriod);
-    setupEventListeners();
 }
 
 // Fetch and display the top IT stock list in the sidebar
@@ -345,20 +345,22 @@ function renderFinancialsChart(data) {
 }
 
 function setupEventListeners() {
-    // View Switcher
-    document.getElementById('view-market').onclick = () => {
-        document.getElementById('view-market').classList.add('active');
-        document.getElementById('view-portfolio').classList.remove('active');
-        document.getElementById('market-nav').classList.remove('hidden');
-        document.getElementById('portfolio-nav').classList.add('hidden');
-    };
-
-    document.getElementById('view-portfolio').onclick = () => {
-        document.getElementById('view-portfolio').classList.add('active');
-        document.getElementById('view-market').classList.remove('active');
-        document.getElementById('portfolio-nav').classList.remove('hidden');
-        document.getElementById('market-nav').classList.add('hidden');
-    };
+    // View Switcher is handled by agent-dashboard.js for 3-tab layout.
+    // Fallback for legacy 2-tab if agent-dashboard.js not loaded:
+    if (!document.getElementById('view-agent')) {
+        document.getElementById('view-market').onclick = () => {
+            document.getElementById('view-market').classList.add('active');
+            document.getElementById('view-portfolio').classList.remove('active');
+            document.getElementById('market-nav').classList.remove('hidden');
+            document.getElementById('portfolio-nav').classList.add('hidden');
+        };
+        document.getElementById('view-portfolio').onclick = () => {
+            document.getElementById('view-portfolio').classList.add('active');
+            document.getElementById('view-market').classList.remove('active');
+            document.getElementById('portfolio-nav').classList.remove('hidden');
+            document.getElementById('market-nav').classList.add('hidden');
+        };
+    }
 
     // Unlock Portfolio Logic
     document.getElementById('btn-unlock-portfolio').onclick = () => {
@@ -368,10 +370,15 @@ function setupEventListeners() {
     // Trade Buttons
     document.getElementById('btn-buy').onclick = () => openTradeModal('buy');
     document.getElementById('btn-sell').onclick = () => openTradeModal('sell');
-    document.getElementById('modal-close').onclick = () => {
+    const closeModal = () => {
         document.getElementById('trade-modal').classList.add('hidden');
         document.getElementById('order-status-msg').classList.add('hidden');
     };
+    document.getElementById('modal-close').onclick = closeModal;
+    // Also close when clicking the dark backdrop (outside modal-content)
+    document.getElementById('trade-modal').addEventListener('click', (e) => {
+        if (e.target === document.getElementById('trade-modal')) closeModal();
+    });
     document.getElementById('confirm-order-btn').onclick = handleConfirmOrder;
 
     // Period Toggles

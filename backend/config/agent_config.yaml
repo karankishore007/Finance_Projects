@@ -1,0 +1,132 @@
+# ============================================================================
+# Financial Trading Agent - Central Configuration
+# ============================================================================
+# All tunable parameters are managed here. No business logic constants
+# should be hardcoded in source files.
+# ============================================================================
+
+# --- Application Metadata ---
+app:
+  name: "FinAnalytics Trading Agent"
+  version: "2.0.0"
+  environment: "development"  # development | staging | production
+  log_level: "INFO"           # DEBUG | INFO | WARNING | ERROR | CRITICAL
+  log_format: "json"          # json | text
+
+# --- Data Pipeline ---
+data:
+  # Tickers to track (Nifty IT sector focus for Sprint 2)
+  watchlist:
+    - "TCS.NS"
+    - "INFY.NS"
+    - "HCLTECH.NS"
+    - "WIPRO.NS"
+    - "TECHM.NS"
+    - "LTIM.NS"
+    - "PERSISTENT.NS"
+    - "COFORGE.NS"
+    - "MPHASIS.NS"
+    - "LTTS.NS"
+
+  # Historical data settings
+  backfill_period_months: 24
+  daily_interval: "1d"
+  hourly_interval: "1h"
+
+  # Storage paths (relative to project root)
+  storage:
+    historical_dir: "backend/data/historical"
+    fundamentals_dir: "backend/data/fundamentals"
+    cache_dir: "backend/data/cache"
+    sentiment_db: "backend/data/cache/sentiment.db"
+    paper_trades_db: "backend/data/cache/paper_trades.db"
+
+  # API retry settings
+  api_retry:
+    max_retries: 3
+    backoff_factor: 1.5   # exponential backoff multiplier
+    retry_on_status: [429, 500, 502, 503]
+
+# --- Legacy Models ---
+models:
+  legacy:
+    mean_reversion:
+      lookback_period: 252     # Trading days (1 year)
+      oversold_threshold: 0.2  # Percentile rank below this = oversold
+      overbought_threshold: 0.8
+      weight: 0.33
+
+    bollinger_bands:
+      lookback_period: 20
+      std_dev_multiplier: 2.0
+      squeeze_threshold: 0.05  # Band width below this = squeeze
+      weight: 0.34
+
+    fibonacci:
+      swing_lookback: 126     # ~6 months for swing detection
+      proximity_threshold: 0.02  # 2% distance from level = signal
+      levels: [0.0, 0.236, 0.382, 0.5, 0.618, 0.786, 1.0]
+      weight: 0.33
+
+  # --- SOTA Models ---
+  sota:
+    transformer:
+      model_name: "amazon/chronos-t5-small"
+      context_length: 512      # Number of historical data points
+      forecast_horizon: 5      # Days ahead
+      device: "cpu"
+      weight: 0.5
+      enabled: true
+      fallback_to_prophet: true
+
+    sentiment:
+      model_name: "ProsusAI/finbert"
+      max_headlines: 15
+      recency_decay: 0.85     # Exponential decay for older headlines
+      device: "cpu"
+      weight: 0.5
+      enabled: true
+      fallback_to_vader: true
+
+# --- Meta-Learner ---
+meta_learner:
+  alignment_threshold: 0.75    # Min confidence for signal generation
+  legacy_council_weight: 0.4
+  sota_council_weight: 0.6
+  min_legacy_agreement: 1      # At least N legacy models must agree
+  min_sota_agreement: 1        # At least N SOTA models must agree
+
+  # ATR-based SL/TP
+  atr_period: 14
+  sl_atr_multiplier: 2.0      # Stop loss = entry - (2 x ATR)
+  tp_atr_multiplier: 3.0      # Take profit = entry + (3 x ATR)
+
+# --- Backtesting ---
+backtest:
+  default_initial_capital: 1000000  # INR 10 Lakh
+  warmup_days: 252             # 1 year warmup for indicators
+  commission_per_trade: 20.0   # INR flat fee per trade
+  slippage_bps: 5              # 5 basis points slippage
+  risk_free_rate: 0.065        # 6.5% (Indian T-bill rate)
+
+# --- Paper Trading ---
+paper_trading:
+  initial_capital: 1000000     # INR 10 Lakh
+  enabled: true
+  auto_execute: false          # If true, auto-execute meta-learner signals
+  persistence_file: "backend/data/cache/paper_portfolio.json"
+
+# --- Risk Management ---
+risk:
+  max_position_pct: 0.05       # 5% of portfolio per position
+  max_daily_loss_pct: 0.03     # 3% daily loss circuit breaker
+  max_total_drawdown_pct: 0.15 # 15% drawdown halts all trading
+  max_open_positions: 5        # Max concurrent positions
+  min_cash_reserve_pct: 0.20   # Always keep 20% in cash
+  risk_per_trade_pct: 0.02     # Risk 2% of capital per trade (Kelly-lite)
+
+# --- Scheduling ---
+scheduler:
+  daily_signal_cron: "0 16 * * 1-5"  # 4 PM IST on weekdays (post-market)
+  data_refresh_cron: "30 15 * * 1-5"  # 3:30 PM IST (near market close)
+  enabled: false

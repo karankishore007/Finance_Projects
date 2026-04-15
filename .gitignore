@@ -1,6 +1,18 @@
-.env
+# Python
 __pycache__/
 *.pyc
+*.pyo
+.env
+
+# Data & Cache (don't commit large data files)
+backend/data/historical/*.parquet
+backend/data/fundamentals/*.parquet
+backend/data/cache/*.db
+backend/data/cache/*.json
+backend/logs/*.log
+
+# Models (large binaries)
+backend/models/
+
+# OS
 .DS_Store
-.pytest_cache/
-backend/static/news_cache.json

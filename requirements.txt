@@ -1,0 +1,40 @@
+# ============================================================================
+# Financial Trading Agent — Dependencies
+# ============================================================================
+
+# --- Core Framework ---
+fastapi>=0.104.0
+uvicorn>=0.24.0
+pydantic>=2.5.0
+python-dotenv>=1.0.0
+
+# --- Data Ingestion ---
+yfinance>=0.2.32
+pandas>=2.1.0
+numpy>=1.26.0
+
+# --- Data Storage ---
+pyarrow>=14.0.0
+
+# --- Technical Analysis (Legacy Models) ---
+# (No extra deps — uses numpy/pandas directly)
+
+# --- Forecasting ---
+prophet>=1.1.5
+
+# --- Sentiment Analysis ---
+vaderSentiment>=3.3.2
+
+# --- SOTA Models (optional — graceful fallback if not installed) ---
+# transformers>=4.35.0       # FinBERT — install separately if needed
+# torch>=2.1.0               # PyTorch CPU — install separately if needed
+# chronos-forecasting>=0.1.0 # Chronos — install separately if needed
+
+# --- Broker ---
+dhanhq>=1.0.0
+
+# --- Configuration ---
+pyyaml>=6.0.1
+
+# --- Scheduling (optional) ---
+# apscheduler>=3.10.0
